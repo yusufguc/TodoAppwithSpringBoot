@@ -1,9 +1,13 @@
 package com.ysfgc.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ysfgc.dto.TodosDto;
@@ -61,6 +65,29 @@ public class TodosServiceImpl implements TodosService{
 
 		}
 		todosRepository.deleteById(id);
+	}
+
+
+	@Override
+	public Page<Todos> findAllPageable(Pageable pageable) {
+		
+		Page<Todos> page = todosRepository.findAllPageable(pageable);
+		return page;
+	}
+
+
+	@Override
+	public List<TodosDto> toDtoList(List<Todos> todosList) {
+		List<TodosDto> dtoList=new ArrayList<>();
+		
+		for (Todos todos: todosList) {
+			TodosDto todosDto=new TodosDto();
+			
+			BeanUtils.copyProperties(todos, todosDto);
+			
+			dtoList.add(todosDto);
+		}
+		return dtoList;
 	}
 	
 	

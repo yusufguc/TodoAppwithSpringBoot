@@ -1,7 +1,10 @@
 package com.ysfgc.controller.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,7 +16,10 @@ import com.ysfgc.controller.TodosController;
 import com.ysfgc.dto.TodosDto;
 import com.ysfgc.dto.TodosDtoUI;
 import com.ysfgc.model.RootEntity;
+import com.ysfgc.model.Todos;
 import com.ysfgc.service.TodosService;
+import com.ysfgc.utils.RestPageableEntity;
+import com.ysfgc.utils.RestPageableRequest;
 
 import jakarta.validation.Valid;
 
@@ -44,6 +50,16 @@ public class TodosControllerImpl extends RestBaseController implements TodosCont
 	@Override
 	public void deleteTodoById(@PathVariable("id")Long id) {
 		todosService.deleteTodoById(id);
+	}
+
+	@GetMapping()
+	@Override
+	public RootEntity<RestPageableEntity<TodosDto>> findAllPageable(RestPageableRequest pageable) {
+		
+		Page<Todos> page = todosService.findAllPageable(toPageable(pageable));
+		RestPageableEntity<TodosDto> pageableResponse = toPageableResponse(page,todosService.toDtoList(page.getContent()));
+		
+		return ok(pageableResponse) ;
 	}
 	
 	
