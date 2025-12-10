@@ -1,6 +1,8 @@
 package com.ysfgc.service.impl;
 
+import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -16,16 +18,17 @@ import com.ysfgc.jwt.AuthResponse;
 import com.ysfgc.jwt.JwtService;
 import com.ysfgc.jwt.LoginRequest;
 import com.ysfgc.jwt.RegisterRequest;
+import com.ysfgc.model.RefreshToken;
 import com.ysfgc.model.User;
+import com.ysfgc.repository.RefreshTokenRepository;
 import com.ysfgc.repository.UserRepository;
+import com.ysfgc.service.CreateRefreshToken;
 import com.ysfgc.service.IAuthService;
 
 @Service
 public class IAuthServiceImpl implements IAuthService {
 
-    private final SecurityConfig securityConfig;
-	
-	@Autowired
+    @Autowired
 	private UserRepository userRepository;
 	
 	@Autowired
@@ -36,11 +39,13 @@ public class IAuthServiceImpl implements IAuthService {
 	
 	@Autowired
 	private AuthenticationProvider authenticationProvider;
+	
+	@Autowired
+	private RefreshTokenRepository refreshTokenRepository;
 
-    IAuthServiceImpl(SecurityConfig securityConfig) {
-        this.securityConfig = securityConfig;
-    }
-
+	@Autowired
+	private CreateRefreshToken createRefreshToken;
+    
 	@Override
 	public AuthResponse register(RegisterRequest registerRequest) {
 		
@@ -57,9 +62,14 @@ public class IAuthServiceImpl implements IAuthService {
 	
 		String token = jwtService.generateToken(savedUser);
 		
-		return new AuthResponse(token) ;
+		RefreshToken refreshToken=createRefreshToken.createRefreshToken(savedUser);
+		refreshTokenRepository.save(refreshToken);
+		
+		return new AuthResponse(token,refreshToken.getRefreshToken());
+		
 	}
-
+	
+	
 	@Override
 	public AuthResponse login(LoginRequest loginRequest) {
 		
@@ -71,13 +81,22 @@ public class IAuthServiceImpl implements IAuthService {
 			Optional<User> optionalEmail = userRepository.findByEmail(loginRequest.getEmail());
 			
 			String token = jwtService.generateToken(optionalEmail.get());
+
+
+			RefreshToken refreshToken=createRefreshToken.createRefreshToken(optionalEmail.get());
+			refreshTokenRepository.save(refreshToken);
 			
-			return new AuthResponse(token);
+			return new AuthResponse(token,refreshToken.getRefreshToken());
+			
 		} catch (Exception e) {
 			throw new BaseException(new ErrorMessage(MessageType.EMAIL_OR_PASSWORD_INVALID,null));
 		}
 	}
 
+	
+
+
+	
 
 	
 	

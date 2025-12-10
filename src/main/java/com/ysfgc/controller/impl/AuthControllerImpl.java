@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ysfgc.controller.IAuthController;
 import com.ysfgc.jwt.AuthResponse;
 import com.ysfgc.jwt.LoginRequest;
+import com.ysfgc.jwt.RefreshTokenRequest;
 import com.ysfgc.jwt.RegisterRequest;
 import com.ysfgc.model.RootEntity;
 import com.ysfgc.service.IAuthService;
+import com.ysfgc.service.IRefreshTokenService;
 
 import jakarta.validation.Valid;
 
@@ -23,6 +25,9 @@ public class AuthControllerImpl extends RestBaseController implements IAuthContr
 	@Autowired
 	private IAuthService authService;
 
+	@Autowired
+	private IRefreshTokenService refreshTokenService;
+	
 	@PostMapping("/register")
 	@Override
 	public RootEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -34,6 +39,12 @@ public class AuthControllerImpl extends RestBaseController implements IAuthContr
 	public RootEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
 		
 		return ok(authService.login(loginRequest));
+	}
+
+	@PostMapping("/refreshToken")
+	@Override
+	public RootEntity<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
+		return ok(refreshTokenService.refreshToken(request));
 	}
 
 }
