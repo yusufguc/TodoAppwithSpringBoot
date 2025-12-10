@@ -1,5 +1,11 @@
 package com.ysfgc.model;
 
+import java.util.Collection;
+import java.util.Collections;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,20 +24,28 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class User {
+public class User implements UserDetails{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotBlank(message = "name cannot be empty")
 	private String name;
 	
-	@NotBlank(message = "email cannot be empty")
-	@Email(message = "email is not in the correct format")
 	private String email;
 	
-	@NotBlank(message = "passwor cannot be empty")
-	private  String password;;
+	private  String password;
+
+	
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return Collections.emptyList();
+	}
+
+
+	@Override
+	public String getUsername() {
+		return this.email;
+	};
 
 }

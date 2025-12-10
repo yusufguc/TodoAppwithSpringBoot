@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.ysfgc.dto.TodosDto;
 import com.ysfgc.dto.TodosDtoUI;
+import com.ysfgc.exception.BaseException;
+import com.ysfgc.exception.ErrorMessage;
+import com.ysfgc.exception.MessageType;
 import com.ysfgc.model.Todos;
 import com.ysfgc.repository.TodosRepository;
 import com.ysfgc.service.TodosService;
@@ -37,7 +40,7 @@ public class TodosServiceImpl implements TodosService{
 		
 		Optional<Todos> optional = todosRepository.findById(id);
 		if (optional.isEmpty()) {
-			return null; // exception will be added later
+			throw new BaseException(new ErrorMessage(MessageType.TODO_NOT_FOUND,id.toString()));
 		}
 		Todos  todoDb= optional.get();
 		todoDb.setTitle(todo.getTitle());
@@ -54,10 +57,9 @@ public class TodosServiceImpl implements TodosService{
 	@Override
 	public void deleteTodoById(Long id) {
 		if ( !todosRepository.existsById(id)) {
-			return ;// exception will be added later
+			throw new BaseException(new ErrorMessage(MessageType.TODO_NOT_FOUND,id.toString()));
 
 		}
-		
 		todosRepository.deleteById(id);
 	}
 	
