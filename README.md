@@ -58,22 +58,6 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 
 
 
-🧱 Project Structure
-src/main/java/com/ysfgc
-│
-├── config
-├── controller
-│   └── impl
-├── dto
-├── exception
-├── handler
-├── jwt
-├── model
-├── repository
-├── service
-│   └── impl
-└── SpringBootApplication
-
 
 Feel free to fork this repository and submit pull requests.
 Suggestions and improvements are always welcome.
